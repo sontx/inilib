@@ -169,7 +169,8 @@ namespace INILib
                 {
                     foreach (var section in _sections)
                     {
-                        writer.WriteLine(BuildSectionString(section.Name));
+                        if (!string.IsNullOrEmpty(section.Name))
+                            writer.WriteLine(BuildSectionString(section.Name));
                         foreach (var key in section.Keys)
                         {
                             writer.WriteLine(BuildKeyString(key.Key, key.Value));
