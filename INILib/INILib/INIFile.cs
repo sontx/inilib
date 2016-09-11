@@ -179,6 +179,21 @@ namespace INILib
             }
         }
 
+        public void Add(string sectionName, string keyName, string value)
+        {
+            lock (this)
+            {
+                Section section = this[sectionName];
+                if (section == null)
+                {
+                    section = new Section();
+                    section.Name = sectionName;
+                    _sections.Add(section);
+                }
+                section.Keys.Add(keyName, value);
+            }
+        }
+
         #region implements IList<Section>
 
         public int Count { get { lock (this) { return _sections.Count; } } }
