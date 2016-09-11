@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using INILib.Exception;
+using System.Text;
 
 namespace INILib
 {
@@ -165,18 +166,7 @@ namespace INILib
                 throw new NullElementException("INI File path is null or empty.");
             using (var writer = new StreamWriter(filePath, false, Config.TEXT_ENCODING))
             {
-                lock (this)
-                {
-                    foreach (var section in _sections)
-                    {
-                        if (!string.IsNullOrEmpty(section.Name))
-                            writer.WriteLine(BuildSectionString(section.Name));
-                        foreach (var key in section.Keys)
-                        {
-                            writer.WriteLine(BuildKeyString(key.Key, key.Value));
-                        }
-                    }
-                }
+                writer.Write(ToString());
             }
         }
 
@@ -282,5 +272,23 @@ namespace INILib
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+            lock (this)
+            {
+                foreach (var section in _sections)
+                {
+                    if (!string.IsNullOrEmpty(section.Name))
+                        builder.AppendLine(BuildSectionString(section.Name));
+                    foreach (var key in section.Keys)
+                    {
+                        builder.AppendLine(BuildKeyString(key.Key, key.Value));
+                    }
+                }
+            }
+            return builder.ToString();
+        }
     }
 }
