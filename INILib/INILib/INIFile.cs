@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using INILib.Exception;
 using System.Text;
+using System;
 
 namespace INILib
 {
@@ -10,6 +11,8 @@ namespace INILib
     {
         private List<Section> _sections = new List<Section>();
         private string _filePath;
+
+        public bool SupportMultiline { get; set; } = true;
 
         public string FilePath
         {
@@ -75,6 +78,8 @@ namespace INILib
             }
             keyName = line.Substring(0, equalCharIndex).Trim();
             value = line.Substring(equalCharIndex + 1).Trim();
+            if (SupportMultiline)
+                value = Utils.SinglineToMultiline(value);
             return true;
         }
 
@@ -123,7 +128,7 @@ namespace INILib
                 }
             }
         }
-
+        
         #endregion
 
         public Section this[string name]
@@ -284,7 +289,8 @@ namespace INILib
                         builder.AppendLine(BuildSectionString(section.Name));
                     foreach (var key in section.Keys)
                     {
-                        builder.AppendLine(BuildKeyString(key.Key, key.Value));
+                        string value = SupportMultiline ? Utils.MultilineToSingleLine(key.Value) : key.Value;
+                        builder.AppendLine(BuildKeyString(key.Key, value));
                     }
                 }
             }
